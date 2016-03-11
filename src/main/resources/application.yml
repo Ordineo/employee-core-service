@@ -1,0 +1,17 @@
+spring:
+  jackson:
+    serialization:
+      WRITE_CHAR_ARRAYS_AS_JSON_ARRAYS: false
+  data:
+    rest:
+      base-uri: /api
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+utils:
+  dateformat: ddMMyyyy
+logging:
+  level:
+    be.ordina: 'DEBUG'
+    org.hibernate: 'ERROR'
