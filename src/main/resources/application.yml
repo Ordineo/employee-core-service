@@ -4,14 +4,19 @@ spring:
       WRITE_CHAR_ARRAYS_AS_JSON_ARRAYS: false
   data:
     rest:
-      base-uri: /api
+      basePath: /api
+      defaultMediaType: application/hal+json
   jpa:
-    #show-sql: true
+    show-sql: true
     hibernate:
       ddl-auto: create
-utils:
-  dateformat: ddMMyyyy
 logging:
   level:
     be.ordina: 'DEBUG'
-    #org.hibernate: 'ERROR'
+    org.hibernate: 'ERROR'
+config:
+  retry:
+    initialInterval: 2000
+    multiplier: 1.2
+    maxInterval: 100000
+    maxAttempts: 20
