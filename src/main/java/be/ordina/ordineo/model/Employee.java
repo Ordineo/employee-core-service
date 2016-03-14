@@ -7,12 +7,15 @@ import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Identifiable;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
@@ -28,6 +31,7 @@ public class Employee  implements Identifiable<Long>{
     private Long id;
 
     @NotNull
+    @Column(name="username",unique = true)
     private String username;
     @NotNull
     private String firstName;
@@ -40,8 +44,8 @@ public class Employee  implements Identifiable<Long>{
     private String phoneNumber;
     @NotNull
     private String function;
-    @Enumerated(EnumType.STRING)
-    @NotNull
+
+    @OneToOne(cascade = CascadeType.ALL)
     private Unit unit;
     private String description;
     private String profilePicture;

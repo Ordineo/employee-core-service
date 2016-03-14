@@ -1,20 +1,25 @@
 package be.ordina.ordineo.model;
 
-public enum Unit {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-    ORAJ("ORA/J"), MS, CW, EU, FIN, ICC, Q, SAP, SCO, SOUTH, TES, VW, NONE;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+public class Unit {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String name;
-    Unit(String name){
-        this.name = name;
-    }
-
-    Unit(){
-        this.name = name();
-    }
-
-    @Override
-    public String toString() {
-        return this.name;
-    }
 }
