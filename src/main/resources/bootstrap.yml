@@ -1,9 +1,9 @@
 spring:
   application:
     name: employee-ordineo
-  cloud:
-    config:
-      failFast: true
+#  cloud:
+#    config:
+#      failFast: true
 #retry properties. retry in case config-server has not started yet.
   config:
     retry:
@@ -12,12 +12,12 @@ spring:
       maxInterval: 100000
       maxAttempts: 20
 ---
-spring:
-  profiles: test
-  cloud:
-    config:
-      failFast: false
----
+#spring:
+#  profiles: test
+#  cloud:
+#    config:
+#      failFast: false
+#---
 #spring:
 #  profiles: cloud
 #  cloud:
