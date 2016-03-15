@@ -88,14 +88,18 @@ from resource to resource.
 
 A `GET` request is used to get an employee
 
+==== Response fields
+
+include::{snippets}/get-employee/response-fields.adoc[]
+
 ==== Request structure
 
-include::{snippets}/get-Employee/http-request.adoc[]
+include::{snippets}/get-employee/http-request.adoc[]
 
 ==== Example request
 
-include::{snippets}/get-Employee/curl-request.adoc[]
+include::{snippets}/get-employee/curl-request.adoc[]
 
 ==== Example response
 
-include::{snippets}/get-Employee/http-response.adoc[]
+include::{snippets}/get-employee/http-response.adoc[]
