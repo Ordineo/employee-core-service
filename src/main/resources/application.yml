@@ -14,18 +14,14 @@ logging:
   level:
     be.ordina: 'DEBUG'
     org.hibernate: 'ERROR'
+---
 eureka:
   client:
     serviceUrl:
       defaultZone: https://eureka-ordineo.cfapps.io/eureka/ #http://localhost:8761/eureka/
 ribbon:
   IsSecure: true
-config:
-  retry:
-    initialInterval: 2000
-    multiplier: 1.2
-    maxInterval: 100000
-    maxAttempts: 20
+---
 spring:
   profiles: cloud
 server:
