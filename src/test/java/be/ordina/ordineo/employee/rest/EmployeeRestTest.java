@@ -96,7 +96,7 @@ public class EmployeeRestTest {
                 .andExpect(jsonPath("$.email", is("kevin@gmail.com")))
                 .andExpect(jsonPath("$.phoneNumber", is("047637287")))
                 .andExpect(jsonPath("$.function", is("Software Developer Java")))
-                .andExpect(jsonPath("$.description", is("Some text")))
+                .andExpect(jsonPath("$.description", is("Lorem Ipsum is slechts een proeftekst uit het drukkerij- en zetterijwezen. Lorem Ipsum is de standaard proeftekst in deze bedrijfstak sinds de 16e eeuw, toen een onbekende drukker een zethaak met letters")))
                 .andExpect(jsonPath("$.profilePicture", is("profile.jpg")))
                 .andExpect(jsonPath("$.gender", is("MALE")))
                 .andExpect(jsonPath("$.birthDate", is("1992-07-25")))
