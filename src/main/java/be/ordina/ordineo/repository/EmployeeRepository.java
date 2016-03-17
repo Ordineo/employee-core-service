@@ -14,7 +14,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 public interface EmployeeRepository extends PagingAndSortingRepository<Employee,Long>{
 
     @RestResource(path="employee",rel="employee")
-    Employee findByUsername(@Param("username") String username);
+    Employee findByUsernameIgnoreCase(@Param("username") String username);
 
     @RestResource(path="unit",rel="unit")
     Page<Employee> findByUnitName(@Param("unit")String unit,@Param("page")Pageable pageable);
