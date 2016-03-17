@@ -15,7 +15,7 @@ deploy:
   organization: OrdinaBelgiumNV
   space: development
   on:
-    repo: Ordineo/employee-core-service
+    repo: Ordineo/employee-service
     branch: master
 after_deploy:
 - mvn clean test jacoco:report coveralls:report
