@@ -13,10 +13,10 @@ import org.springframework.data.rest.core.annotation.RestResource;
 @RepositoryRestResource(excerptProjection = EmployeeProjection.class)
 public interface EmployeeRepository extends PagingAndSortingRepository<Employee,Long>{
 
-    @RestResource(path="",rel="employee")
-    Employee findByUsername(@Param("username") String username);
+    @RestResource(path="employee",rel="employee")
+    Employee findByUsernameIgnoreCase(@Param("username") String username);
 
-    @RestResource(path="",rel="unit")
+    @RestResource(path="unit",rel="unit")
     Page<Employee> findByUnitName(@Param("unit")String unit,@Param("page")Pageable pageable);
 
 
