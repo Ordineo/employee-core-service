@@ -20,7 +20,8 @@ public class EmployeeRestController {
 
     @RequestMapping(value = "/linkedin/{username}",method = RequestMethod.PUT)
     public ResponseEntity getEmployeeLinkedin(@PathVariable String username,@RequestBody Employee employee){
-        employee.setUsername(username);
+       Employee user= employeeRepository.findByUsernameIgnoreCase(username);
+        employee.setId(user.getId());
         employeeRepository.save(employee);
 
         return new ResponseEntity(HttpStatus.ACCEPTED);
