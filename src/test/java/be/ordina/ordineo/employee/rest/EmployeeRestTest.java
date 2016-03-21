@@ -2,9 +2,13 @@ package be.ordina.ordineo.employee.rest;
 
 
 import be.ordina.ordineo.EmployeeCoreApplication;
+import be.ordina.ordineo.model.Employee;
 import be.ordina.ordineo.model.Gender;
 import be.ordina.ordineo.model.Unit;
+import be.ordina.ordineo.repository.EmployeeRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,6 +31,7 @@ import java.util.Date;
 
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.halLinks;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
@@ -35,6 +40,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -45,7 +51,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class EmployeeRestTest {
 
 
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
     private MockMvc mockMvc;
+
+    private ObjectWriter objectWriter;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Rule
     public RestDocumentation restDocumentation = new RestDocumentation("target/generated-snippets");
     @Autowired
@@ -60,6 +75,8 @@ public class EmployeeRestTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
                 .apply(documentationConfiguration(this.restDocumentation)).alwaysDo(this.document)
                 .build();
+        objectWriter = objectMapper.writer();
+
     }
 
     @Test
@@ -107,4 +124,12 @@ public class EmployeeRestTest {
     }
 
 
+    @Test
+    public void updateEmployee() throws Exception {
+    Employee employee = employeeRepository.findByUsernameIgnoreCase("Nivek");
+        employee.setFirstName("Ken");
+        String string = objectWriter.writeValueAsString(employee);
+
+        mockMvc.perform(put("/employees/" +employee.getId()).content(string).contentType(APPLICATION_JSON)).andExpect(status().isNoContent());
+    }
 }
