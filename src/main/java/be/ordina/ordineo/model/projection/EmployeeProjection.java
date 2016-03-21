@@ -3,6 +3,7 @@ package be.ordina.ordineo.model.projection;
 import be.ordina.ordineo.model.Employee;
 import be.ordina.ordineo.model.Gender;
 import be.ordina.ordineo.model.Unit;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.config.Projection;
 
 import java.time.LocalDate;
@@ -17,7 +18,9 @@ public interface EmployeeProjection {
     String getEmail();
     String getPhoneNumber();
     String getFunction();
-    Unit getUnit();
+
+    @Value("#{target.unit.getName()}")
+    String getUnit();
     String getDescription();
     String getProfilePicture();
     Gender getGender();
