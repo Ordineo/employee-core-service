@@ -1,6 +1,5 @@
 package be.ordina.ordineo.controller;
 
-import be.ordina.ordineo.client.LinkedinClient;
 import be.ordina.ordineo.model.Employee;
 import be.ordina.ordineo.repository.EmployeeRepository;
 import com.netflix.governator.annotations.binding.Request;
@@ -20,8 +19,6 @@ public class EmployeeRestController {
     @Autowired
     EmployeeRepository employeeRepository;
 
-    @Autowired
-    LinkedinClient client;
 
     @RequestMapping(value = "/linkedin/{username}",method = RequestMethod.PUT)
     public ResponseEntity getEmployeeLinkedin(@PathVariable String username,@RequestBody Employee employee){
