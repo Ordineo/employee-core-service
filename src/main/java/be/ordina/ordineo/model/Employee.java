@@ -47,7 +47,9 @@ public class Employee  implements Identifiable<Long>{
 
     @OneToOne(cascade = CascadeType.ALL)
     private Unit unit;
+    @Column(length = 2048)
     private String description;
+
     private String profilePicture;
     @Enumerated(EnumType.STRING)
     @NotNull
