@@ -18,16 +18,18 @@ public class EmployeeRestController {
     EmployeeRepository employeeRepository;
 
 
-    @RequestMapping(value = "/linkedin/{username}",method = RequestMethod.PUT)
-    public ResponseEntity getEmployeeLinkedin(@PathVariable String username,@RequestBody Employee employee){
-       Employee user= employeeRepository.findByUsernameIgnoreCase(username);
-        employee.setId(user.getId());
-        employeeRepository.save(employee);
+    @RequestMapping(value = "/linkedin",method = RequestMethod.PUT)
+    public ResponseEntity getEmployeeLinkedin(@RequestBody Employee employee){
+       Employee user= employeeRepository.findByUsernameIgnoreCase(employee.getUsername());
+        user.setFirstName(employee.getFirstName());
+        user.setUsername(employee.getUsername());
+        user.setLastName(employee.getLastName());
+        user.setDescription(employee.getDescription());
+        user.setProfilePicture(employee.getProfilePicture());
+        user.setLinkedin(employee.getLinkedin());
+        user.setFunction(employee.getFunction());
 
+        employeeRepository.save(user);
         return new ResponseEntity(HttpStatus.ACCEPTED);
-
-
-
-
     }
 }
