@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,16 +17,11 @@ public class EmployeeRestController {
     EmployeeRepository employeeRepository;
 
 
-    @RequestMapping(value = "/linkedin/{username}",method = RequestMethod.PUT)
-    public ResponseEntity getEmployeeLinkedin(@PathVariable String username,@RequestBody Employee employee){
-       Employee user= employeeRepository.findByUsernameIgnoreCase(username);
+    @RequestMapping(value = "/linkedin",method = RequestMethod.PUT)
+    public ResponseEntity getEmployeeLinkedin(@RequestBody Employee employee){
+        Employee user= employeeRepository.findByUsernameIgnoreCase(employee.getUsername());
         employee.setId(user.getId());
         employeeRepository.save(employee);
-
         return new ResponseEntity(HttpStatus.ACCEPTED);
-
-
-
-
     }
 }
