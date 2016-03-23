@@ -6,7 +6,6 @@ import be.ordina.ordineo.model.Employee;
 import be.ordina.ordineo.model.Gender;
 import be.ordina.ordineo.model.Unit;
 import be.ordina.ordineo.repository.EmployeeRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.junit.Before;
@@ -21,13 +20,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.ws.rs.core.MediaType;
 import java.time.LocalDate;
-import java.util.Date;
 
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
@@ -125,11 +122,19 @@ public class EmployeeRestTest {
 
 
     @Test
-    public void updateEmployee() throws Exception {
-    Employee employee = employeeRepository.findByUsernameIgnoreCase("Nivek");
+      public void updateEmployee() throws Exception {
+        Employee employee = employeeRepository.findByUsernameIgnoreCase("Nivek");
         employee.setFirstName("Ken");
         String string = objectWriter.writeValueAsString(employee);
 
         mockMvc.perform(put("/employees/" +employee.getId()).content(string).contentType(APPLICATION_JSON)).andExpect(status().isNoContent());
+    }
+    @Test
+    public void updateEmployeeWithNullValueShouldReturnBadRequest() throws Exception {
+        Employee employee = employeeRepository.findByUsernameIgnoreCase("Nivek");
+        employee.setFirstName(null);
+        String string = objectWriter.writeValueAsString(employee);
+
+        mockMvc.perform(put("/employees/" +employee.getId()).content(string).contentType(APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
 }

@@ -83,7 +83,7 @@ from resource to resource.
 [[resources]]
 = Resources
 
-[[resources-Employee-create]]
+[[resources-employee-create]]
 === Requesting an Employee
 
 A `GET` request is used to get an employee
@@ -103,3 +103,38 @@ include::{snippets}/get-employee/curl-request.adoc[]
 ==== Example response
 
 include::{snippets}/get-employee/http-response.adoc[]
+
+[[resources-employee-update]]
+=== Updating an Employee
+
+A `PUT` request is used to update an employee
+
+==== Request structure
+
+include::{snippets}/update-employee/http-request.adoc[]
+
+==== Example request
+
+include::{snippets}/update-employee/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/update-employee/http-response.adoc[]
+
+[[resources-employee-update-bad-request]]
+=== Updating an Employee with a null value: 400 BAD REQUEST
+
+A `PUT` used to update the employee with a null value will return a 400 BAD REQUEST
+
+==== Request structure
+
+include::{snippets}/update-employee-with-null-value-should-return-bad-request/http-request.adoc[]
+
+==== Example request
+
+include::{snippets}/update-employee-with-null-value-should-return-bad-request/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/update-employee-with-null-value-should-return-bad-request/http-response.adoc[]
+
