@@ -12,6 +12,5 @@ public class EmployeeEventHandler {
     @HandleBeforeCreate
     public void handleBeforeCreate(Employee e){
 
-
     }
 }
