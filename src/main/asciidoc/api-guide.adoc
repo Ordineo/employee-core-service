@@ -109,6 +109,10 @@ include::{snippets}/get-employee/http-response.adoc[]
 
 A `PUT` request is used to update an employee
 
+==== Request fields
+
+include::{snippets}/post-employee/request-fields.adoc[]
+
 ==== Request structure
 
 include::{snippets}/update-employee/http-request.adoc[]
@@ -126,6 +130,10 @@ include::{snippets}/update-employee/http-response.adoc[]
 
 A `PUT` used to update the employee with a null value will return a 400 BAD REQUEST
 
+==== Request fields
+
+include::{snippets}/post-employee/request-fields.adoc[]
+
 ==== Request structure
 
 include::{snippets}/update-employee-with-null-value-should-return-bad-request/http-request.adoc[]
@@ -138,3 +146,23 @@ include::{snippets}/update-employee-with-null-value-should-return-bad-request/cu
 
 include::{snippets}/update-employee-with-null-value-should-return-bad-request/http-response.adoc[]
 
+[[resources-employee-post]]
+=== Creating an Employee
+
+A `POST` request is used to create an employee
+
+==== Request fields
+
+include::{snippets}/post-employee/request-fields.adoc[]
+
+==== Request structure
+
+include::{snippets}/post-employee/http-request.adoc[]
+
+==== Example request
+
+include::{snippets}/post-employee/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/post-employee/http-response.adoc[]

@@ -17,13 +17,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Employee  implements Identifiable<Long>{
 
     @Id
@@ -31,16 +31,21 @@ public class Employee  implements Identifiable<Long>{
     private Long id;
 
     @NotNull
+    @Size(min=2 ,max = 25)
     @Column(name="username",unique = true)
     private String username;
     @NotNull
+    @Size(min=2 ,max = 30)
     private String firstName;
     @NotNull
+    @Size(min=2 ,max = 30)
     private String lastName;
     private String linkedin;
+
     @NotNull
     private String email;
-    @NotNull
+
+    @Size(min=8,max=16)
     private String phoneNumber;
     @NotNull
     private String function;
@@ -48,9 +53,9 @@ public class Employee  implements Identifiable<Long>{
     @OneToOne(cascade = CascadeType.ALL)
     private Unit unit;
     @Column(length = 2048)
+    @Size(max=2048)
     private String description;
 
-    private String profilePicture;
     @Enumerated(EnumType.STRING)
     @NotNull
     private Gender gender;
