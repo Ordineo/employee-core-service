@@ -1,6 +1,5 @@
 package be.ordina.ordineo.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -47,11 +46,13 @@ public class Employee  implements Identifiable<Long>{
 
     @Size(min=8,max=16)
     private String phoneNumber;
+
     @NotNull
     private String function;
 
     @OneToOne(cascade = CascadeType.ALL)
     private Unit unit;
+
     @Column(length = 2048)
     @Size(max=2048)
     private String description;
@@ -59,6 +60,7 @@ public class Employee  implements Identifiable<Long>{
     @Enumerated(EnumType.STRING)
     @NotNull
     private Gender gender;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @NotNull
     private LocalDate birthDate;
