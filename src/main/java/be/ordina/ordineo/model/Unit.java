@@ -14,7 +14,6 @@ import javax.persistence.Id;
 @Setter
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Unit {
 
     @Id
