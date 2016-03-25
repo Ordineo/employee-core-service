@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 @Projection(name="employeeProjection", types=Employee.class)
 public interface EmployeeProjection {
-
+    String getId();
     String getUsername();
     String getFirstName();
     String getLastName();
