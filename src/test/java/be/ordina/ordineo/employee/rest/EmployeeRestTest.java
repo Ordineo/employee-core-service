@@ -6,7 +6,6 @@ import be.ordina.ordineo.model.Employee;
 import be.ordina.ordineo.model.Gender;
 import be.ordina.ordineo.model.Unit;
 import be.ordina.ordineo.repository.EmployeeRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.junit.Before;
@@ -24,14 +23,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.ws.rs.core.MediaType;
 import java.time.LocalDate;
-import java.util.Date;
 
 
 
@@ -148,6 +145,7 @@ public class EmployeeRestTest {
 
         mockMvc.perform(put("/employees/" +employee.getId()).content(string).contentType(APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
+
     @Test
     public void postEmployee() throws Exception{
         Employee employee = employeeRepository.findByUsernameIgnoreCase("Nivek");
@@ -179,6 +177,23 @@ public class EmployeeRestTest {
 
 
 
+    }
+    @Test
+    public void postEmployeeWithDuplicateUsername() throws Exception {
+        Employee employee = employeeRepository.findByUsernameIgnoreCase("Nivek");
+        String string = objectWriter.writeValueAsString(employee);
+
+        mockMvc.perform(post("/employees/").content(string).contentType(APPLICATION_JSON)).andExpect(status().isConflict());
+    }
+    @Test
+    public void postEmployeeWithNullValue() throws Exception {
+        Employee employee = employeeRepository.findByUsernameIgnoreCase("Nivek");
+        employee.setUsername("Gide");
+        employee.setId(null);
+        employee.setFirstName(null);
+        String string = objectWriter.writeValueAsString(employee);
+
+        mockMvc.perform(post("/employees/").content(string).contentType(APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
     @Test
     public void syncLinkedinWithProfile() throws Exception {
