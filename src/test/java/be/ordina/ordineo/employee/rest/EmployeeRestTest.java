@@ -80,7 +80,7 @@ public class EmployeeRestTest {
     public void setup() {
         this.document = document("{method-name}");
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
-                .apply(documentationConfiguration(this.restDocumentation).uris().withScheme("https").withHost("employee-ordineo.cfapps.io/")).alwaysDo(this.document)
+                .apply(documentationConfiguration(this.restDocumentation).uris().withScheme("https")).alwaysDo(this.document)
                 .build();
         objectWriter = objectMapper.writer();
 
