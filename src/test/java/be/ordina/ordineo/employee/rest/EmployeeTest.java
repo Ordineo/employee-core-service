@@ -163,6 +163,20 @@ public class EmployeeTest {
                 .validate(employee);
         assertTrue(constraintViolations.stream().filter(m -> m.getMessage().equals("may not be null")).count() > 0);
     }
+    @Test
+    public void functionIsTooLong() {
+        employee.setFunction("Lorem Ipsum is slechts een proeftekst uit het drukkerij");
+        constraintViolations = localValidatorFactory
+                .validate(employee);
+        assertTrue(constraintViolations.stream().filter(m -> m.getMessage().equals("size must be between 2 and 52")).count() > 0);
+    }
+    @Test
+    public void functionIsTooShort() {
+        employee.setFunction("1");
+        constraintViolations = localValidatorFactory
+                .validate(employee);
+        assertTrue(constraintViolations.stream().filter(m -> m.getMessage().equals("size must be between 2 and 52")).count() > 0);
+    }
 
     @Test
     public void descriptionTooLong() {

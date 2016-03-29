@@ -48,6 +48,7 @@ public class Employee  implements Identifiable<Long>{
     private String phoneNumber;
 
     @NotNull
+    @Size(min = 2, max = 52)
     private String function;
 
     @OneToOne(cascade = CascadeType.ALL)
