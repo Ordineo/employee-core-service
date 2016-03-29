@@ -83,7 +83,6 @@ public class EmployeeRestTest {
                 .apply(documentationConfiguration(this.restDocumentation).uris().withScheme("https")).alwaysDo(this.document)
                 .build();
         objectWriter = objectMapper.writer();
-
     }
 
     @Test
@@ -128,7 +127,6 @@ public class EmployeeRestTest {
                 .andExpect(jsonPath("$._links.employee.href", endsWith("/employees/1{?projection}")));
     }
 
-
     @Test
       public void updateEmployee() throws Exception {
         Employee employee = employeeRepository.findByUsernameIgnoreCase("Nivek");
@@ -137,6 +135,7 @@ public class EmployeeRestTest {
 
         mockMvc.perform(put("/employees/" +employee.getId()).content(string).contentType(APPLICATION_JSON)).andExpect(status().isNoContent());
     }
+
     @Test
     public void updateEmployeeWithNullValueShouldReturnBadRequest() throws Exception {
         Employee employee = employeeRepository.findByUsernameIgnoreCase("Nivek");
@@ -174,9 +173,6 @@ public class EmployeeRestTest {
                        ));
 
         mockMvc.perform(post("/employees").content(string).contentType(MediaTypes.HAL_JSON)).andExpect(status().isCreated()).andReturn().getResponse().getHeader("Location");
-
-
-
     }
     @Test
     public void postEmployeeWithDuplicateUsername() throws Exception {
@@ -185,6 +181,7 @@ public class EmployeeRestTest {
 
         mockMvc.perform(post("/employees/").content(string).contentType(APPLICATION_JSON)).andExpect(status().isConflict());
     }
+
     @Test
     public void postEmployeeWithNullValue() throws Exception {
         Employee employee = employeeRepository.findByUsernameIgnoreCase("Nivek");
@@ -195,9 +192,9 @@ public class EmployeeRestTest {
 
         mockMvc.perform(post("/employees/").content(string).contentType(APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
+
     @Test
     public void syncLinkedinWithProfile() throws Exception {
-
         Employee employee = employeeRepository.findByUsernameIgnoreCase("Nivek");
         employee.setId(null);
         String string = objectWriter.writeValueAsString(employee);
@@ -205,13 +202,10 @@ public class EmployeeRestTest {
     }
 
     private static class ConstrainedFields {
-
         private final ConstraintDescriptions constraintDescriptions;
-
         ConstrainedFields(Class<?> input) {
             this.constraintDescriptions = new ConstraintDescriptions(input);
         }
-
         private FieldDescriptor withPath(String path) {
             return fieldWithPath(path).attributes(key("constraints").value(StringUtils
                     .collectionToDelimitedString(this.constraintDescriptions
