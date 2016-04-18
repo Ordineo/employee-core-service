@@ -1,5 +1,5 @@
 = RESTful Employee API Guide
-Andy Wilkinson;
+Kevin Van Houtte;
 :doctype: book
 :toc:
 :sectanchors:
@@ -90,6 +90,31 @@ include::{snippets}/get-employee/curl-request.adoc[]
 ==== Example response
 
 include::{snippets}/get-employee/http-response.adoc[]
+
+[[resources-employee-about-projection]]
+=== Requesting an about projection of an Employee
+
+A `GET` request is used to get an about projection of an Employee
+
+==== Response fields
+
+include::{snippets}/get-employee-about-projection/response-fields.adoc[]
+
+==== Request structure
+
+include::{snippets}/get-employee-about-projection/http-request.adoc[]
+
+==== Example request
+
+include::{snippets}/get-employee-about-projection/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/get-employee-about-projection/http-response.adoc[]
+
+==== Example links
+
+include::{snippets}/get-employee-about-projection/links.adoc[]
 
 [[resources-employee-update]]
 === Updating an Employee

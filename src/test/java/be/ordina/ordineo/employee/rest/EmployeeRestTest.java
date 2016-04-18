@@ -128,6 +128,38 @@ public class EmployeeRestTest {
     }
 
     @Test
+    public void getEmployeeAboutProjection() throws Exception{
+        this.document.snippets(
+                links(
+                        halLinks(), linkWithRel("self").description("The employee's resource"),
+                        linkWithRel("employee").optional().description("The employee's projection")),
+                responseFields(
+                        fieldWithPath("username").description("The employee unique database identifier").type(String.class),
+                        fieldWithPath("firstName").description("The employee's first name").type(String.class),
+                        fieldWithPath("lastName").description("The employee's last name").type(String.class),
+                        fieldWithPath("function").description("The employee's function").type(String.class),
+                        fieldWithPath("unit").description("The employee's unit").type(Unit.class),
+                        fieldWithPath("description").description("The employee's description").type(String.class),
+                        fieldWithPath("gender").description("The employee's gender").type(Gender.class),
+                        fieldWithPath("startDate").description("The employee's start date").type(LocalDate.class),
+                        fieldWithPath("_links").description("links to other resources")
+                ));
+
+        mockMvc.perform(get("/employees/search/employee?username=Nivek&projection=aboutProjection"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username", is("Nivek")))
+                .andExpect(jsonPath("$.firstName", is("Kevin")))
+                .andExpect(jsonPath("$.lastName", is("Van Houtte")))
+                .andExpect(jsonPath("$.function", is("Software Developer Java")))
+                .andExpect(jsonPath("$.description", is("Lorem Ipsum is slechts een proeftekst uit het drukkerij- en zetterijwezen. Lorem Ipsum is de standaard proeftekst in deze bedrijfstak sinds de 16e eeuw, toen een onbekende drukker een zethaak met letters")))
+                .andExpect(jsonPath("$.gender", is("MALE")))
+                .andExpect(jsonPath("$.startDate", is("2015-11-01")))
+                .andExpect(jsonPath("$._links.self.href", endsWith("/employees/1")))
+                .andExpect(jsonPath("$._links.employee.href", endsWith("/employees/1{?projection}")));
+
+    }
+
+    @Test
       public void updateEmployee() throws Exception {
         Employee employee = employeeRepository.findByUsernameIgnoreCase("Nivek");
         employee.setFirstName("Ken");
