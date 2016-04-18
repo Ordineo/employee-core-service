@@ -116,6 +116,31 @@ include::{snippets}/get-employee-about-projection/http-response.adoc[]
 
 include::{snippets}/get-employee-about-projection/links.adoc[]
 
+[[resources-employee-search-projection]]
+=== Requesting an search projection of an Employee
+
+A `GET` request is used to get an search projection of an Employee
+
+==== Response fields
+
+include::{snippets}/get-employee-search-projection/response-fields.adoc[]
+
+==== Request structure
+
+include::{snippets}/get-employee-search-projection/http-request.adoc[]
+
+==== Example request
+
+include::{snippets}/get-employee-search-projection/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/get-employee-search-projection/http-response.adoc[]
+
+==== Example links
+
+include::{snippets}/get-employee-search-projection/links.adoc[]
+
 [[resources-employee-update]]
 === Updating an Employee
 
