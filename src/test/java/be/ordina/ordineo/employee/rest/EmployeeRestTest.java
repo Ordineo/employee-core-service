@@ -160,6 +160,30 @@ public class EmployeeRestTest {
     }
 
     @Test
+    public void getEmployeeSearchProjection() throws Exception{
+        this.document.snippets(
+                links(
+                        halLinks(), linkWithRel("self").description("The employee's resource"),
+                        linkWithRel("_embedded.employees[].employee").optional().description("The employee's projection")),
+                responseFields(
+                        fieldWithPath("_embedded.employees[].username").description("The employee unique database identifier").type(String.class),
+                        fieldWithPath("_embedded.employees[].firstName").description("The employee's first name").type(String.class),
+                        fieldWithPath("_embedded.employees[].lastName").description("The employee's last name").type(String.class),
+                        fieldWithPath("_embedded.employees[]._links").description("links to other resources"),
+                        fieldWithPath("_links").description("links to other resources")
+                ));
+
+        mockMvc.perform(get("/employees/search/employeeName?name=kevin&projection=searchProjection"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._embedded.employees[0].username", is("Nivek")))
+                .andExpect(jsonPath("$._embedded.employees[0].firstName", is("Kevin")))
+                .andExpect(jsonPath("$._embedded.employees[0].lastName", is("Van Houtte")))
+                .andExpect(jsonPath("$._embedded.employees[0]._links.self.href", endsWith("/employees/1")))
+                .andExpect(jsonPath("$._embedded.employees[0]._links.employee.href", endsWith("/employees/1{?projection}")))
+                .andExpect(jsonPath("$._links.self.href", endsWith("/employees/search/employeeName?name=kevin&projection=searchProjection")));;
+    }
+
+    @Test
       public void updateEmployee() throws Exception {
         Employee employee = employeeRepository.findByUsernameIgnoreCase("Nivek");
         employee.setFirstName("Ken");
