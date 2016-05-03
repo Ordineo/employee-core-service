@@ -9,11 +9,6 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
-<<<<<<< HEAD
-=======
-import org.springframework.hateoas.Resources;
->>>>>>> cf01e117052c356f4c46a7d1b95f99cc940935bf
-import org.springframework.security.access.prepost.PreAuthorize;
 
 
 
