@@ -9,8 +9,6 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
-import org.springframework.hateoas.Resources;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 
 
@@ -19,7 +17,9 @@ import java.util.List;
 
 
 @RepositoryRestResource
-@PreAuthorize("hasRole('ROLE_USER')")
+
+//@PreAuthorize("hasRole('ROLE_USER')")
+
 public interface EmployeeRepository extends PagingAndSortingRepository<Employee,Long>{
 
     @RestResource(path="employee",rel="employee")

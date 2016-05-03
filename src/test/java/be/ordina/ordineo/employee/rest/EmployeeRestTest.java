@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.servlet.Filter;
 import javax.ws.rs.core.MediaType;
 import java.time.LocalDate;
 
@@ -73,14 +74,15 @@ public class EmployeeRestTest {
     @Autowired
     private WebApplicationContext wac;
     private RestDocumentationResultHandler document;
-
+    @Autowired
+    private Filter springSecurityFilterChain;
 
 
     @Before
     public void setup() {
         this.document = document("{method-name}");
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
-                .apply(documentationConfiguration(this.restDocumentation).uris().withScheme("https")).alwaysDo(this.document)
+                .apply(documentationConfiguration(this.restDocumentation).uris().withScheme("https")).alwaysDo(this.document).addFilter(springSecurityFilterChain)
                 .build();
         objectWriter = objectMapper.writer();
     }
@@ -109,8 +111,9 @@ public class EmployeeRestTest {
                                  fieldWithPath("_links").description("links to other resources")
                         ));
 
-        mockMvc.perform(
-                get("/employees/1").accept(MediaType.APPLICATION_JSON))
+       mockMvc.perform(
+                get("/employees/1").accept(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJOaXZlayIsInJvbGUiOiJbUk9MRV9VU0VSLCBST0xFX0FETUlOXSIsImNyZWF0ZWQiOjE0NjIxNzI4Njk5ODQsImV4cCI6MTQ2Mjc3NzY2OX0.BFpbs12BCKHvju7ICzmzG8_tnfM1AwLGoTF56u3i8ZAR_A56gvivGaL1uKSjkK4HXBcMt_NjAdnFubx-uoSQ8Q"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username", is("Nivek")))
                 .andExpect(jsonPath("$.firstName", is("Kevin")))
@@ -145,7 +148,8 @@ public class EmployeeRestTest {
                         fieldWithPath("_links").description("links to other resources")
                 ));
 
-        mockMvc.perform(get("/employees/search/employee?username=Nivek&projection=aboutProjection"))
+        mockMvc.perform(get("/employees/search/employee?username=Nivek&projection=aboutProjection")
+                .header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJOaXZlayIsInJvbGUiOiJbUk9MRV9VU0VSLCBST0xFX0FETUlOXSIsImNyZWF0ZWQiOjE0NjIxNzI4Njk5ODQsImV4cCI6MTQ2Mjc3NzY2OX0.BFpbs12BCKHvju7ICzmzG8_tnfM1AwLGoTF56u3i8ZAR_A56gvivGaL1uKSjkK4HXBcMt_NjAdnFubx-uoSQ8Q"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username", is("Nivek")))
                 .andExpect(jsonPath("$.firstName", is("Kevin")))
@@ -173,14 +177,15 @@ public class EmployeeRestTest {
                         fieldWithPath("_links").description("links to other resources")
                 ));
 
-        mockMvc.perform(get("/employees/search/employeeName?name=kevin&projection=searchProjection"))
+        mockMvc.perform(get("/employees/search/employeeName?name=kevin&projection=searchProjection")
+                .header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJOaXZlayIsInJvbGUiOiJbUk9MRV9VU0VSLCBST0xFX0FETUlOXSIsImNyZWF0ZWQiOjE0NjIxNzI4Njk5ODQsImV4cCI6MTQ2Mjc3NzY2OX0.BFpbs12BCKHvju7ICzmzG8_tnfM1AwLGoTF56u3i8ZAR_A56gvivGaL1uKSjkK4HXBcMt_NjAdnFubx-uoSQ8Q"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.employees[0].username", is("Nivek")))
                 .andExpect(jsonPath("$._embedded.employees[0].firstName", is("Kevin")))
                 .andExpect(jsonPath("$._embedded.employees[0].lastName", is("Van Houtte")))
                 .andExpect(jsonPath("$._embedded.employees[0]._links.self.href", endsWith("/employees/1")))
                 .andExpect(jsonPath("$._embedded.employees[0]._links.employee.href", endsWith("/employees/1{?projection}")))
-                .andExpect(jsonPath("$._links.self.href", endsWith("/employees/search/employeeName?name=kevin&projection=searchProjection")));;
+                .andExpect(jsonPath("$._links.self.href", endsWith("/employees/search/employeeName?name=kevin&projection=searchProjection")));
     }
 
     @Test
