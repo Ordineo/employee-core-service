@@ -2,12 +2,14 @@ package be.ordina.ordineo.employee.rest;
 
 
 import be.ordina.ordineo.EmployeeCoreApplication;
+import be.ordina.ordineo.filter.JwtFilter;
 import be.ordina.ordineo.model.Employee;
 import be.ordina.ordineo.model.Gender;
 import be.ordina.ordineo.model.Unit;
 import be.ordina.ordineo.repository.EmployeeRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import io.jsonwebtoken.MalformedJwtException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,30 +29,21 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.servlet.Filter;
+import javax.servlet.ServletException;
 import javax.ws.rs.core.MediaType;
 import java.time.LocalDate;
-
-
 
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.halLinks;
-import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
-import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.snippet.Attributes.attributes;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.snippet.Attributes.key;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.restdocs.snippet.Attributes.key;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -74,15 +67,14 @@ public class EmployeeRestTest {
     @Autowired
     private WebApplicationContext wac;
     private RestDocumentationResultHandler document;
-    @Autowired
-    private Filter springSecurityFilterChain;
 
 
     @Before
     public void setup() {
         this.document = document("{method-name}");
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
-                .apply(documentationConfiguration(this.restDocumentation).uris().withScheme("https")).alwaysDo(this.document).addFilter(springSecurityFilterChain)
+                .apply(documentationConfiguration(this.restDocumentation).uris().withScheme("https")).alwaysDo(this.document)
+                .addFilter(new JwtFilter(), "/*")
                 .build();
         objectWriter = objectMapper.writer();
     }
@@ -121,6 +113,7 @@ public class EmployeeRestTest {
                 .andExpect(jsonPath("$.email", is("kevin@gmail.com")))
                 .andExpect(jsonPath("$.phoneNumber", is("047637287")))
                 .andExpect(jsonPath("$.function", is("Software Developer Java")))
+                .andExpect(jsonPath("$.unit.name", is("JWorks")))
                 .andExpect(jsonPath("$.description", is("Lorem Ipsum is slechts een proeftekst uit het drukkerij- en zetterijwezen. Lorem Ipsum is de standaard proeftekst in deze bedrijfstak sinds de 16e eeuw, toen een onbekende drukker een zethaak met letters")))
                 .andExpect(jsonPath("$.gender", is("MALE")))
                 .andExpect(jsonPath("$.birthDate", is("1992-07-25")))
@@ -194,7 +187,8 @@ public class EmployeeRestTest {
         employee.setFirstName("Ken");
         String string = objectWriter.writeValueAsString(employee);
 
-        mockMvc.perform(put("/employees/" +employee.getId()).content(string).contentType(APPLICATION_JSON)).andExpect(status().isNoContent());
+        mockMvc.perform(put("/employees/" +employee.getId()).content(string).contentType(APPLICATION_JSON).header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJOaXZlayIsInJvbGUiOiJbUk9MRV9VU0VSLCBST0xFX0FETUlOXSIsImNyZWF0ZWQiOjE0NjIxNzI4Njk5ODQsImV4cCI6MTQ2Mjc3NzY2OX0.BFpbs12BCKHvju7ICzmzG8_tnfM1AwLGoTF56u3i8ZAR_A56gvivGaL1uKSjkK4HXBcMt_NjAdnFubx-uoSQ8Q"))
+        .andExpect(status().isNoContent());
     }
 
     @Test
@@ -203,7 +197,8 @@ public class EmployeeRestTest {
         employee.setFirstName(null);
         String string = objectWriter.writeValueAsString(employee);
 
-        mockMvc.perform(put("/employees/" +employee.getId()).content(string).contentType(APPLICATION_JSON)).andExpect(status().isBadRequest());
+        mockMvc.perform(put("/employees/" +employee.getId()).content(string).contentType(APPLICATION_JSON).header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJOaXZlayIsInJvbGUiOiJbUk9MRV9VU0VSLCBST0xFX0FETUlOXSIsImNyZWF0ZWQiOjE0NjIxNzI4Njk5ODQsImV4cCI6MTQ2Mjc3NzY2OX0.BFpbs12BCKHvju7ICzmzG8_tnfM1AwLGoTF56u3i8ZAR_A56gvivGaL1uKSjkK4HXBcMt_NjAdnFubx-uoSQ8Q"))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -211,6 +206,10 @@ public class EmployeeRestTest {
         Employee employee = employeeRepository.findByUsernameIgnoreCase("Nivek");
         employee.setId(null);
         employee.setUsername("Keloggs");
+        Unit unit = new Unit();
+        unit.getId();
+        unit.setName("TestUnit");
+        employee.setUnit(unit);
         String string = objectWriter.writeValueAsString(employee);
 
         ConstrainedFields fields = new ConstrainedFields(Employee.class);
@@ -233,14 +232,16 @@ public class EmployeeRestTest {
                         fields.withPath("resignationDate").description("The employee's resignation date").type(LocalDate.class)
                        ));
 
-        mockMvc.perform(post("/employees").content(string).contentType(MediaTypes.HAL_JSON)).andExpect(status().isCreated()).andReturn().getResponse().getHeader("Location");
+        mockMvc.perform(post("/employees").content(string).contentType(MediaTypes.HAL_JSON).header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJOaXZlayIsInJvbGUiOiJbUk9MRV9VU0VSLCBST0xFX0FETUlOXSIsImNyZWF0ZWQiOjE0NjIxNzI4Njk5ODQsImV4cCI6MTQ2Mjc3NzY2OX0.BFpbs12BCKHvju7ICzmzG8_tnfM1AwLGoTF56u3i8ZAR_A56gvivGaL1uKSjkK4HXBcMt_NjAdnFubx-uoSQ8Q"))
+                .andExpect(status().isCreated()).andReturn().getResponse().getHeader("Location");
     }
     @Test
     public void postEmployeeWithDuplicateUsername() throws Exception {
         Employee employee = employeeRepository.findByUsernameIgnoreCase("Nivek");
         String string = objectWriter.writeValueAsString(employee);
 
-        mockMvc.perform(post("/employees/").content(string).contentType(APPLICATION_JSON)).andExpect(status().isConflict());
+        mockMvc.perform(post("/employees/").content(string).contentType(APPLICATION_JSON).header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJOaXZlayIsInJvbGUiOiJbUk9MRV9VU0VSLCBST0xFX0FETUlOXSIsImNyZWF0ZWQiOjE0NjIxNzI4Njk5ODQsImV4cCI6MTQ2Mjc3NzY2OX0.BFpbs12BCKHvju7ICzmzG8_tnfM1AwLGoTF56u3i8ZAR_A56gvivGaL1uKSjkK4HXBcMt_NjAdnFubx-uoSQ8Q"))
+                .andExpect(status().isConflict());
     }
 
     @Test
@@ -251,7 +252,8 @@ public class EmployeeRestTest {
         employee.setFirstName(null);
         String string = objectWriter.writeValueAsString(employee);
 
-        mockMvc.perform(post("/employees/").content(string).contentType(APPLICATION_JSON)).andExpect(status().isBadRequest());
+        mockMvc.perform(post("/employees/").content(string).contentType(APPLICATION_JSON).header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJOaXZlayIsInJvbGUiOiJbUk9MRV9VU0VSLCBST0xFX0FETUlOXSIsImNyZWF0ZWQiOjE0NjIxNzI4Njk5ODQsImV4cCI6MTQ2Mjc3NzY2OX0.BFpbs12BCKHvju7ICzmzG8_tnfM1AwLGoTF56u3i8ZAR_A56gvivGaL1uKSjkK4HXBcMt_NjAdnFubx-uoSQ8Q"))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -259,8 +261,27 @@ public class EmployeeRestTest {
         Employee employee = employeeRepository.findByUsernameIgnoreCase("Nivek");
         employee.setId(null);
         String string = objectWriter.writeValueAsString(employee);
-        mockMvc.perform(put("/linkedin").content(string).contentType(APPLICATION_JSON)).andExpect(status().isAccepted());
+        mockMvc.perform(put("/linkedin").content(string).contentType(APPLICATION_JSON).header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJOaXZlayIsInJvbGUiOiJbUk9MRV9VU0VSLCBST0xFX0FETUlOXSIsImNyZWF0ZWQiOjE0NjIxNzI4Njk5ODQsImV4cCI6MTQ2Mjc3NzY2OX0.BFpbs12BCKHvju7ICzmzG8_tnfM1AwLGoTF56u3i8ZAR_A56gvivGaL1uKSjkK4HXBcMt_NjAdnFubx-uoSQ8Q"))
+                .andExpect(status().isAccepted());
     }
+
+    @Test(expected = ServletException.class)
+    public void missingHeaderTest() throws Exception {
+        Employee employee = employeeRepository.findByUsernameIgnoreCase("Nivek");
+        employee.setId(null);
+        String string = objectWriter.writeValueAsString(employee);
+        mockMvc.perform(put("/linkedin").content(string).contentType(APPLICATION_JSON));
+    }
+
+    @Test(expected = ServletException.class)
+    public void invalidTokenTest() throws Exception {
+        Employee employee = employeeRepository.findByUsernameIgnoreCase("Nivek");
+        employee.setId(null);
+        String string = objectWriter.writeValueAsString(employee);
+        mockMvc.perform(put("/linkedin").content(string).contentType(APPLICATION_JSON).header("Authorization", "Bearer eyJhbGciOitetreriJ9.eyJzdWIiOiJOaXZlayIsInJvbGUiOiJbUk9MRV9VU0VSLCBST0xFX0FETUlOXSIsImNyZWF0ZWQiOjE0NjIxNzI4Njk5ODQsImV4cCI6MTQ2Mjc3NzY2OX0.BFpbs12BCKHvju7ICzmzG8_tnfM1AwLGoTF56u3i8ZAR_A56gvivGaL1uKSjkK4HXBcMt_NjAdnFubx-uoSQ8Q"))
+        ;
+    }
+
 
     private static class ConstrainedFields {
         private final ConstraintDescriptions constraintDescriptions;

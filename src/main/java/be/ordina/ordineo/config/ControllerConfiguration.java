@@ -25,5 +25,4 @@ public class ControllerConfiguration {
     @ResponseStatus(value=HttpStatus.BAD_REQUEST,reason = "Invalid data sent to server")
     public void updateConstraintsNotValid(){}
 
-
 }
