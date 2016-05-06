@@ -10,6 +10,7 @@ import be.ordina.ordineo.repository.EmployeeRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import io.jsonwebtoken.MalformedJwtException;
+import org.codehaus.jettison.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,6 +32,11 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletException;
 import javax.ws.rs.core.MediaType;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.time.LocalDate;
 
 import static org.hamcrest.Matchers.endsWith;
@@ -59,6 +65,8 @@ public class EmployeeRestTest {
 
     private ObjectWriter objectWriter;
 
+    private String authToken;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -70,13 +78,56 @@ public class EmployeeRestTest {
 
 
     @Before
-    public void setup() {
+    public void setup() throws Exception{
         this.document = document("{method-name}");
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
                 .apply(documentationConfiguration(this.restDocumentation).uris().withScheme("https")).alwaysDo(this.document)
                 .addFilter(new JwtFilter(), "/*")
                 .build();
         objectWriter = objectMapper.writer();
+
+        authToken = getAuthToken();
+    }
+
+    public String getAuthToken() throws Exception {
+
+        String url = "https://gateway-ordineo.cfapps.io/auth";
+        URL object = new URL(url);
+
+        HttpURLConnection con = (HttpURLConnection) object.openConnection();
+        con.setDoOutput(true);
+        con.setDoInput(true);
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("Accept", "application/json");
+        con.setRequestMethod("POST");
+
+        JSONObject cred = new JSONObject();
+        JSONObject auth = new JSONObject();
+        JSONObject parent = new JSONObject();
+
+        cred.put("username", "Nivek");
+        cred.put("password", "password");
+
+        OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
+        wr.write(cred.toString());
+        wr.flush();
+
+        //display what returns the POST request
+
+        StringBuilder sb = new StringBuilder();
+        int HttpResult = con.getResponseCode();
+        if (HttpResult == HttpURLConnection.HTTP_OK) {
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(con.getInputStream(), "utf-8"));
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                sb.append(line + "\n");
+            }
+            br.close();
+            return "Bearer " +sb.substring(10,sb.length()-3);
+        } else {
+            return con.getResponseMessage();
+        }
     }
 
     @Test
@@ -105,7 +156,7 @@ public class EmployeeRestTest {
 
        mockMvc.perform(
                 get("/employees/1").accept(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJOaXZlayIsInJvbGUiOiJbUk9MRV9VU0VSLCBST0xFX0FETUlOXSIsImNyZWF0ZWQiOjE0NjIxNzI4Njk5ODQsImV4cCI6MTQ2Mjc3NzY2OX0.BFpbs12BCKHvju7ICzmzG8_tnfM1AwLGoTF56u3i8ZAR_A56gvivGaL1uKSjkK4HXBcMt_NjAdnFubx-uoSQ8Q"))
+                .header("Authorization", authToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username", is("Nivek")))
                 .andExpect(jsonPath("$.firstName", is("Kevin")))
@@ -142,7 +193,7 @@ public class EmployeeRestTest {
                 ));
 
         mockMvc.perform(get("/employees/search/employee?username=Nivek&projection=aboutProjection")
-                .header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJOaXZlayIsInJvbGUiOiJbUk9MRV9VU0VSLCBST0xFX0FETUlOXSIsImNyZWF0ZWQiOjE0NjIxNzI4Njk5ODQsImV4cCI6MTQ2Mjc3NzY2OX0.BFpbs12BCKHvju7ICzmzG8_tnfM1AwLGoTF56u3i8ZAR_A56gvivGaL1uKSjkK4HXBcMt_NjAdnFubx-uoSQ8Q"))
+                .header("Authorization", authToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username", is("Nivek")))
                 .andExpect(jsonPath("$.firstName", is("Kevin")))
@@ -171,7 +222,7 @@ public class EmployeeRestTest {
                 ));
 
         mockMvc.perform(get("/employees/search/employeeName?name=kevin&projection=searchProjection")
-                .header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJOaXZlayIsInJvbGUiOiJbUk9MRV9VU0VSLCBST0xFX0FETUlOXSIsImNyZWF0ZWQiOjE0NjIxNzI4Njk5ODQsImV4cCI6MTQ2Mjc3NzY2OX0.BFpbs12BCKHvju7ICzmzG8_tnfM1AwLGoTF56u3i8ZAR_A56gvivGaL1uKSjkK4HXBcMt_NjAdnFubx-uoSQ8Q"))
+                .header("Authorization", authToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.employees[0].username", is("Nivek")))
                 .andExpect(jsonPath("$._embedded.employees[0].firstName", is("Kevin")))
@@ -187,7 +238,7 @@ public class EmployeeRestTest {
         employee.setFirstName("Ken");
         String string = objectWriter.writeValueAsString(employee);
 
-        mockMvc.perform(put("/employees/" +employee.getId()).content(string).contentType(APPLICATION_JSON).header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJOaXZlayIsInJvbGUiOiJbUk9MRV9VU0VSLCBST0xFX0FETUlOXSIsImNyZWF0ZWQiOjE0NjIxNzI4Njk5ODQsImV4cCI6MTQ2Mjc3NzY2OX0.BFpbs12BCKHvju7ICzmzG8_tnfM1AwLGoTF56u3i8ZAR_A56gvivGaL1uKSjkK4HXBcMt_NjAdnFubx-uoSQ8Q"))
+        mockMvc.perform(put("/employees/" +employee.getId()).content(string).contentType(APPLICATION_JSON).header("Authorization", authToken))
         .andExpect(status().isNoContent());
     }
 
@@ -197,7 +248,7 @@ public class EmployeeRestTest {
         employee.setFirstName(null);
         String string = objectWriter.writeValueAsString(employee);
 
-        mockMvc.perform(put("/employees/" +employee.getId()).content(string).contentType(APPLICATION_JSON).header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJOaXZlayIsInJvbGUiOiJbUk9MRV9VU0VSLCBST0xFX0FETUlOXSIsImNyZWF0ZWQiOjE0NjIxNzI4Njk5ODQsImV4cCI6MTQ2Mjc3NzY2OX0.BFpbs12BCKHvju7ICzmzG8_tnfM1AwLGoTF56u3i8ZAR_A56gvivGaL1uKSjkK4HXBcMt_NjAdnFubx-uoSQ8Q"))
+        mockMvc.perform(put("/employees/" +employee.getId()).content(string).contentType(APPLICATION_JSON).header("Authorization", authToken))
                 .andExpect(status().isBadRequest());
     }
 
@@ -232,7 +283,7 @@ public class EmployeeRestTest {
                         fields.withPath("resignationDate").description("The employee's resignation date").type(LocalDate.class)
                        ));
 
-        mockMvc.perform(post("/employees").content(string).contentType(MediaTypes.HAL_JSON).header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJOaXZlayIsInJvbGUiOiJbUk9MRV9VU0VSLCBST0xFX0FETUlOXSIsImNyZWF0ZWQiOjE0NjIxNzI4Njk5ODQsImV4cCI6MTQ2Mjc3NzY2OX0.BFpbs12BCKHvju7ICzmzG8_tnfM1AwLGoTF56u3i8ZAR_A56gvivGaL1uKSjkK4HXBcMt_NjAdnFubx-uoSQ8Q"))
+        mockMvc.perform(post("/employees").content(string).contentType(MediaTypes.HAL_JSON).header("Authorization", authToken))
                 .andExpect(status().isCreated()).andReturn().getResponse().getHeader("Location");
     }
     @Test
@@ -240,7 +291,7 @@ public class EmployeeRestTest {
         Employee employee = employeeRepository.findByUsernameIgnoreCase("Nivek");
         String string = objectWriter.writeValueAsString(employee);
 
-        mockMvc.perform(post("/employees/").content(string).contentType(APPLICATION_JSON).header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJOaXZlayIsInJvbGUiOiJbUk9MRV9VU0VSLCBST0xFX0FETUlOXSIsImNyZWF0ZWQiOjE0NjIxNzI4Njk5ODQsImV4cCI6MTQ2Mjc3NzY2OX0.BFpbs12BCKHvju7ICzmzG8_tnfM1AwLGoTF56u3i8ZAR_A56gvivGaL1uKSjkK4HXBcMt_NjAdnFubx-uoSQ8Q"))
+        mockMvc.perform(post("/employees/").content(string).contentType(APPLICATION_JSON).header("Authorization", authToken))
                 .andExpect(status().isConflict());
     }
 
@@ -252,7 +303,7 @@ public class EmployeeRestTest {
         employee.setFirstName(null);
         String string = objectWriter.writeValueAsString(employee);
 
-        mockMvc.perform(post("/employees/").content(string).contentType(APPLICATION_JSON).header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJOaXZlayIsInJvbGUiOiJbUk9MRV9VU0VSLCBST0xFX0FETUlOXSIsImNyZWF0ZWQiOjE0NjIxNzI4Njk5ODQsImV4cCI6MTQ2Mjc3NzY2OX0.BFpbs12BCKHvju7ICzmzG8_tnfM1AwLGoTF56u3i8ZAR_A56gvivGaL1uKSjkK4HXBcMt_NjAdnFubx-uoSQ8Q"))
+        mockMvc.perform(post("/employees/").content(string).contentType(APPLICATION_JSON).header("Authorization", authToken))
                 .andExpect(status().isBadRequest());
     }
 
@@ -261,7 +312,7 @@ public class EmployeeRestTest {
         Employee employee = employeeRepository.findByUsernameIgnoreCase("Nivek");
         employee.setId(null);
         String string = objectWriter.writeValueAsString(employee);
-        mockMvc.perform(put("/linkedin").content(string).contentType(APPLICATION_JSON).header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJOaXZlayIsInJvbGUiOiJbUk9MRV9VU0VSLCBST0xFX0FETUlOXSIsImNyZWF0ZWQiOjE0NjIxNzI4Njk5ODQsImV4cCI6MTQ2Mjc3NzY2OX0.BFpbs12BCKHvju7ICzmzG8_tnfM1AwLGoTF56u3i8ZAR_A56gvivGaL1uKSjkK4HXBcMt_NjAdnFubx-uoSQ8Q"))
+        mockMvc.perform(put("/linkedin").content(string).contentType(APPLICATION_JSON).header("Authorization", authToken))
                 .andExpect(status().isAccepted());
     }
 
