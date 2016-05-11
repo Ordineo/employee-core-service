@@ -2,6 +2,7 @@ package be.ordina.ordineo.filter;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -62,7 +63,7 @@ public class JwtFilter extends GenericFilterBean {
 
             request.setAttribute("claims", claims);
         }
-        catch (final SignatureException e) {
+        catch (final MalformedJwtException e) {
             throw new ServletException("Invalid token.");
         }
 
