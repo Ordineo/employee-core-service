@@ -15,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.restdocs.RestDocumentation;
 import org.springframework.restdocs.constraints.ConstraintDescriptions;
@@ -55,9 +56,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.restdocs.snippet.Attributes.key;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
 @ContextConfiguration(classes=EmployeeCoreApplication.class)
 @ActiveProfiles("test")
+@WebIntegrationTest({"eureka.client.enabled:false"})
 public class EmployeeRestTest {
 
 
