@@ -28,7 +28,7 @@ public interface EmployeeRepository extends PagingAndSortingRepository<Employee,
 
 
     @RestResource(path = "employeeName",rel = "searchEmployee")
-    @Query("select DISTINCT o from Employee o where lower(o.firstName) LIKE CONCAT('%',lower(:name),'%') or lower(o.lastName) LIKE CONCAT('%',lower(:name),'%') ")
+    @Query("select DISTINCT o from Employee o where lower(o.firstName) LIKE CONCAT('%',lower(:name),'%') or lower(o.lastName) LIKE CONCAT('%',lower(:name),'%') or CONCAT(lower(o.firstName),' ',lower(o.lastName)) LIKE CONCAT('%',lower(:name),'%') )")
     List<Employee> findByFirstNameOrLastName(@Param("name") String name);
 
 }
